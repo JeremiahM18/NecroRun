@@ -8,11 +8,13 @@ public class Spawner : MonoBehaviour
     public float obstacleSpeed = 1f;
 
     private float timeUntilOstacleSpawn;
-    
+
 
     private void Update()
     {
-        SpawnLoop();
+        if (GameManager.instance.isPlaying) { 
+            SpawnLoop();
+        }
     }
 
     private void SpawnLoop()
