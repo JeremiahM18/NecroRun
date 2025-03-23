@@ -1799,8 +1799,10 @@ MonoBehaviour:
   - {fileID: 4119229203615056352, guid: 74aa6b0014228a24bbb433787b2588bf, type: 3}
   - {fileID: 3555710083145058512, guid: e4e5dda1c661a544e8117a8ee75df944, type: 3}
   obstacleParent: {fileID: 641533819}
-  obstacleSpawnTime: 4
-  obstacleSpeed: 5
+  obstacleSpawnTime: 2.5
+  obstacleSpawnTimeFacor: 0.1
+  obstacleSpeed: 4
+  obstacleSpeedFactor: 0.2
 --- !u!4 &1244440666
 Transform:
   m_ObjectHideFlags: 0
