@@ -4,7 +4,7 @@ public class RevivePlayer : MonoBehaviour
 {
     private void Start()
     {
-        GameManager.instance.onPlay.AddListener(revivePlayer);
+        GameManager.Instance.onPlay.AddListener(revivePlayer);
 
     }
 

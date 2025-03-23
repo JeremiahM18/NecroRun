@@ -18,14 +18,14 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        GameManager.instance.onGameOver.AddListener(clearObstacles);
-       GameManager.instance.onPlay.AddListener(resetFactors);
+       GameManager.Instance.onGameOver.AddListener(clearObstacles);
+       GameManager.Instance.onPlay.AddListener(resetFactors);
     }
 
 
     private void Update()
     {
-        if (GameManager.instance.isPlaying) { 
+        if (GameManager.Instance.isPlaying) { 
             timeAlive += Time.deltaTime;
 
             calculateFactors();

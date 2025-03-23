@@ -1,27 +1,52 @@
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     #region Singleton
 
-    public static GameManager instance;
+    public static GameManager Instance;
 
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
+        else
+        {
+            Destroy(gameObject);
+        }
+
     }
     #endregion
 
     public float currentScore = 0f;
-
+    public SaveData data;
     public bool isPlaying = false;
 
     public UnityEvent onPlay = new UnityEvent();
     public UnityEvent onGameOver = new UnityEvent();
+
+    [SerializeField] private TMP_InputField nameInputField;
+    [SerializeField] private GameObject nameInputPanel;
+
+
+    private void Start()
+    {
+        string loadedData = SaveSystem.Load("save");
+        if (loadedData != null)
+        {
+            data = JsonUtility.FromJson<SaveData>(loadedData);
+        }
+        else
+        {
+            data = new SaveData();
+        }
+    }
 
     private void Update()
     {
@@ -35,20 +60,43 @@ public class GameManager : MonoBehaviour
     {
         onPlay.Invoke();
         isPlaying = true;
+        currentScore = 0f;
     }
 
     public void GameOver()
     {
-        onGameOver.Invoke();
-        currentScore = 0f;
+        if(currentScore > data.highScore)
+        {
+            nameInputPanel.SetActive(true);
+            data.highScore = currentScore;
+            data.name = "";
+            string saveString = JsonUtility.ToJson(data);
+            SaveSystem.Save("save", saveString);
+        }
+        else
+        {
+            nameInputPanel.SetActive(false);
+        }
         isPlaying = false;
+
+        onGameOver.Invoke();
     }
 
-    public string PrettyScore()
+    public void submitName()
     {
-        return Mathf.RoundToInt(currentScore).ToString();
+        string initials = nameInputField.text.ToUpper().Trim();
+        if (initials.Length > 0)
+        {
+            data.name = initials;
+            data.Save();
+        }
+        nameInputPanel.SetActive(false);
     }
 
+    public string PrettyScore(float score)
+    {
+        return Mathf.RoundToInt(score).ToString();
+    }
 }
 
 
