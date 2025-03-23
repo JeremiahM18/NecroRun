@@ -6,7 +6,7 @@ public class PlayerCollision : MonoBehaviour
     {
         if(other.transform.tag == "Obstacle")
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
             GameManager.instance.GameOver();
         }
     }
