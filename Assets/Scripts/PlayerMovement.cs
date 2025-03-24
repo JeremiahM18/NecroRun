@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -8,13 +9,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform feetPos;
     [SerializeField] private float groundDistance = 0.25f;
-    [SerializeField] private float jumpTime = 0.3f;
 
+    [SerializeField] private float jumpTime = 0.3f;
     [SerializeField] private float crouchHeight = 0.5f;
+
+    public float speed = 7.0f;
 
     private bool isGrounded = false;
     private bool isJumping = false;
     private float jumpTimer;
+    private bool turnLeft = false;
+    private bool turnRight = false;
 
     private void Update()
     {
@@ -29,15 +34,14 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && Input.GetButtonDown("Jump"))
         {
             isJumping = true;
-            rb.linearVelocity = Vector2.up *jumpForce;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
         if(isJumping && Input.GetButton("Jump"))
         {
             if(jumpTimer < jumpTime)
             {
-                rb.linearVelocity = Vector2.up * jumpForce;
-
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 jumpTimer += Time.deltaTime;
             } else
             {
@@ -70,5 +74,28 @@ public class PlayerMovement : MonoBehaviour
         }
 
         #endregion
+
+        #region Left and Right Turns
+        turnLeft = Input.GetKeyDown(KeyCode.A);
+        turnRight = Input.GetKeyDown(KeyCode.D);
+
+        if (turnLeft)
+        {
+            GFX.localRotation = Quaternion.Euler(0, 0, 90);
+
+        } else if (turnRight)
+        {
+            GFX.localRotation = Quaternion.Euler(0, 0, -90);
+
+        }
+
+        //rb.linearVelocity = new Vector2(rb.linearVelocity.x, speed);
+
+        //float horizontalInput = Input.GetAxisRaw("Horizontal");
+        //rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y);
+
+        #endregion
+
+
     }
 }

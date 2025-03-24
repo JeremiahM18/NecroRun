@@ -7,14 +7,14 @@ public class Spawner : MonoBehaviour
     [SerializeField] private GameObject[] obstaclePrefabs;
     [SerializeField] private Transform obstacleParent;
     public float obstacleSpawnTime = 2f;
-    [Range(0, 1)] public float obstacleSpawnTimeFacor = 0.1f;
+    [Range(0, 1)] public float obstacleSpawnTimeFactor = 0.1f;
     public float obstacleSpeed = 1f;
     [Range(0, 1)] public float obstacleSpeedFactor = 0.2f;
 
     private float _obstacleSpawnTime;
     private float _obstacleSpeed;
     private float timeAlive;
-    private float timeUntilOstacleSpawn;
+    private float timeUntilObstacleSpawn;
 
     private void Start()
     {
@@ -25,23 +25,41 @@ public class Spawner : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.isPlaying) { 
-            timeAlive += Time.deltaTime;
-
-            calculateFactors();
-
-            SpawnLoop();
-        }
+        if (!GameManager.Instance.isPlaying)
+        {
+            return;
+        } else 
+            {
+                timeAlive += Time.deltaTime;
+                calculateFactors();
+                SpawnLoop();
+            }
     }
 
     private void SpawnLoop()
     {
-        timeUntilOstacleSpawn += Time.deltaTime;
+        timeUntilObstacleSpawn += Time.deltaTime;
 
-        if(timeUntilOstacleSpawn >= _obstacleSpawnTime)
+        if (timeUntilObstacleSpawn >= _obstacleSpawnTime)
         {
             Spawn();
-            timeUntilOstacleSpawn = 0;
+            timeUntilObstacleSpawn = 0;
+        }
+    }
+    
+    private void Spawn()
+    {
+        int lane = Random.Range(-1, 2);
+        float xPos = lane;
+        Vector3 spawnPos = new Vector3(xPos, 6f, 0f);
+
+        GameObject prefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
+        GameObject spawned = Instantiate(prefab, spawnPos, Quaternion.identity, obstacleParent);
+
+
+        if (spawned.TryGetComponent(out Rigidbody2D rb))
+        {
+            rb.linearVelocity = Vector2.down * _obstacleSpeed;
         }
     }
 
@@ -55,7 +73,7 @@ public class Spawner : MonoBehaviour
 
     private void calculateFactors()
     {
-        _obstacleSpawnTime = obstacleSpawnTime / Mathf.Pow(timeAlive, obstacleSpawnTimeFacor);
+        _obstacleSpawnTime = obstacleSpawnTime / Mathf.Pow(timeAlive, obstacleSpawnTimeFactor);
         _obstacleSpeed = obstacleSpeed * Mathf.Pow(timeAlive, obstacleSpeedFactor);
     }
 
@@ -66,14 +84,5 @@ public class Spawner : MonoBehaviour
         _obstacleSpeed = obstacleSpeed;
     }
 
-    private void Spawn()
-    {
-        GameObject obstacleToSpawn = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
-
-        GameObject spawnedObstacle = Instantiate(obstacleToSpawn, transform.position, Quaternion.identity);
-        spawnedObstacle.transform.parent = obstacleParent;
-
-        Rigidbody2D obstacleRB = spawnedObstacle.GetComponent<Rigidbody2D>();
-        obstacleRB.linearVelocity = Vector2.left * _obstacleSpeed;
-    }
+    
 }

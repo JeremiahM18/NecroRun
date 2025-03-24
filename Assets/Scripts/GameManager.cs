@@ -88,7 +88,6 @@ public class GameManager : MonoBehaviour
         if (initials.Length > 0)
         {
             data.name = initials;
-            data.Save();
         }
         nameInputPanel.SetActive(false);
     }
