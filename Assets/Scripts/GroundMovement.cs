@@ -9,6 +9,8 @@ public class GroundMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.Instance.isPlaying) return;
+
         transform.Translate(Vector3.down * speed * Time.deltaTime);
 
         if(transform.position.y <= -tileHeight)

@@ -4,20 +4,16 @@ public class TrailCamera : MonoBehaviour
 {
     public Transform player;
     public float smoothSpeed = 5f;
-    public Vector3 offset;
-
-    private void Start()
-    {
-        offset = transform.position - player.position;
-    }
+    public float yoffset = 3f;
 
     private void LateUpdate()
     {
         if (player != null) 
         {
-            Vector3 targetPosition = player.position + offset;
+            Vector3 currentPos = transform.position;
+            float targetY = Mathf.Lerp(currentPos.y, player.position.y + yoffset, smoothSpeed * Time.deltaTime);
 
-            transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+            transform.position = new Vector3(currentPos.x, targetY, currentPos.z);
 
         }
     }

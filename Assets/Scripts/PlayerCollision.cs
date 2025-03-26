@@ -23,7 +23,7 @@ public class PlayerCollision : MonoBehaviour
 
         if (collision.gameObject.CompareTag("TallObstacle"))
         {
-            if (player.isJumping)
+            if (player.IsJumping)
             {
                 return;
             }
@@ -31,7 +31,7 @@ public class PlayerCollision : MonoBehaviour
 
         else if (collision.gameObject.CompareTag("LowObstacle"))
         {
-            if (player.isSliding)
+            if (player.IsSliding)
             {
                 return;
             }

@@ -12,7 +12,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Jump Settings")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private float jumpTime = 0.3f;
     [SerializeField] private Transform feetPos;
     [SerializeField] private float groundDistance = 0.25f;
     [SerializeField] private LayerMask groundLayer;
@@ -27,11 +26,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Animator")]
     [SerializeField] private Animator animator;
 
-    public bool isJumping = false;
-    private float jumpTimer = 0f;
     private bool isGrounded = false;
-
+    private bool jumpRequested = false;
+    public bool IsJumping => !isGrounded;
     public bool isSliding = false;
+    public bool IsSliding => isSliding;
     private float slideTimer = 0f;
     private float targetX;
 
@@ -42,45 +41,42 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if(!GameManager.Instance.isPlaying) return;
+
         isGrounded = Physics2D.OverlapCircle(feetPos.position, groundDistance, groundLayer) 
             || Mathf.Abs(rb.linearVelocity.y) < 0.01f;
 
         #region JUMPING
-        if (isGrounded)
+       
+        if (isGrounded && Input.GetButtonDown("Jump"))
         {
-            jumpTimer = 0;
-        }
-
-        if (isGrounded && !isJumping && Input.GetButtonDown("Jump"))
-        {
-            isJumping = true;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpRequested = true;
             animator?.SetTrigger("Jump");
         }
 
-        if (isJumping && Input.GetButton("Jump"))
-        {
-            if (jumpTimer < jumpTime)
-            {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-                jumpTimer += Time.deltaTime;
-            }
-            else
-            {
-                isJumping = false;
-            }
-        }
+        //if (isJumping && Input.GetButton("Jump"))
+        //{
+        //    if (jumpTimer < jumpTime)
+        //    {
+        //        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        //        jumpTimer += Time.deltaTime;
+        //    }
+        //    else
+        //    {
+        //        isJumping = false;
+        //    }
+        //}
 
-        if (Input.GetButtonUp("Jump"))
-        {
-            isJumping = false;
-            jumpTimer = 0;
-        }
+        //if (Input.GetButtonUp("Jump"))
+        //{
+        //    isJumping = false;
+        //    jumpTimer = 0;
+        //}
         #endregion
 
         #region Sliding
 
-        if (Input.GetButtonDown("Fire3") && !isSliding)
+        if (isGrounded && Input.GetKeyDown(KeyCode.LeftShift))
         {
             StartSlide();
         }
@@ -143,5 +139,12 @@ public class PlayerMovement : MonoBehaviour
         animator?.SetBool("Sliding", false);
     }
 
-
+    private void FixedUpdate()
+    {
+        if (jumpRequested)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpRequested = false;
+        }
+    }
 }

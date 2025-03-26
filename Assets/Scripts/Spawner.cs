@@ -8,7 +8,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private Transform obstacleParent;
     public float obstacleSpawnTime = 2f;
     [Range(0, 1)] public float obstacleSpawnTimeFactor = 0.1f;
-    public float obstacleSpeed = 1f;
+    public float obstacleSpeed = 3f;
     [Range(0, 1)] public float obstacleSpeedFactor = 0.2f;
 
     private float _obstacleSpawnTime;
@@ -49,9 +49,9 @@ public class Spawner : MonoBehaviour
     
     private void Spawn()
     {
-        int lane = Random.Range(-1, 2);
-        float xPos = lane;
-        Vector3 spawnPos = new Vector3(xPos, 6f, 0f);
+        float xPos = Random.Range(-1.6f, 1.6f);
+        float yPos = 7f;
+        Vector3 spawnPos = new Vector3(xPos, yPos, 0f);
 
         GameObject prefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
         GameObject spawned = Instantiate(prefab, spawnPos, Quaternion.identity, obstacleParent);
@@ -59,6 +59,7 @@ public class Spawner : MonoBehaviour
 
         if (spawned.TryGetComponent(out Rigidbody2D rb))
         {
+            rb.gravityScale = 0;
             rb.linearVelocity = Vector2.down * _obstacleSpeed;
         }
     }
