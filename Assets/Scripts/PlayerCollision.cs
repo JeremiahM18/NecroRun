@@ -2,6 +2,12 @@ using UnityEngine;
 
 public class PlayerCollision : MonoBehaviour
 {
+    private PlayerMovement player;
+
+    private void Start()
+    {
+        player = GetComponent<PlayerMovement>();
+    }
     private void OnCollisionEnter2D(Collision2D other)
     {
         if(other.gameObject.CompareTag("Obstacle"))
@@ -14,11 +20,28 @@ public class PlayerCollision : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
+
+        if (collision.gameObject.CompareTag("TallObstacle"))
+        {
+            if (player.isJumping)
+            {
+                return;
+            }
+        }
+
+        else if (collision.gameObject.CompareTag("LowObstacle"))
+        {
+            if (player.isSliding)
+            {
+                return;
+            }
+        }
+
+        else if (collision.gameObject.CompareTag("Obstacle"))
         {
             Debug.Log("Player triggered an obstacle!");
-            gameObject.SetActive(false );
-            GameManager.Instance.GameOver();
         }
+        GameManager.Instance.GameOver();
+        gameObject.SetActive(false);
     }
 }

@@ -1,29 +1,49 @@
-using NUnit.Framework.Constraints;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movement Settings")]
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float horizontalLimit = 2.5f;
+
+    [Header("Jump Settings")]
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Transform GFX;
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float jumpTime = 0.3f;
     [SerializeField] private Transform feetPos;
     [SerializeField] private float groundDistance = 0.25f;
+    [SerializeField] private LayerMask groundLayer;
 
-    [SerializeField] private float jumpTime = 0.3f;
-    [SerializeField] private float crouchHeight = 0.5f;
+    //[SerializeField] private float crouchHeight = 0.5f;
+    //public float speed = 7.0f;
+    //private bool turnLeft = false;
 
-    public float speed = 7.0f;
+    [Header("Slide Settings")]
+    [SerializeField] private float slideDuration = 1f;
 
+    [Header("Animator")]
+    [SerializeField] private Animator animator;
+
+    public bool isJumping = false;
+    private float jumpTimer = 0f;
     private bool isGrounded = false;
-    private bool isJumping = false;
-    private float jumpTimer;
-    private bool turnLeft = false;
-    private bool turnRight = false;
+
+    public bool isSliding = false;
+    private float slideTimer = 0f;
+    private float targetX;
+
+    private void Start()
+    {
+        targetX = transform.position.x;
+    }
 
     private void Update()
     {
-        isGrounded = Physics2D.OverlapCircle(feetPos.position, groundDistance, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(feetPos.position, groundDistance, groundLayer) 
+            || Mathf.Abs(rb.linearVelocity.y) < 0.01f;
 
         #region JUMPING
         if (isGrounded)
@@ -31,19 +51,21 @@ public class PlayerMovement : MonoBehaviour
             jumpTimer = 0;
         }
 
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (isGrounded && !isJumping && Input.GetButtonDown("Jump"))
         {
             isJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            animator?.SetTrigger("Jump");
         }
 
-        if(isJumping && Input.GetButton("Jump"))
+        if (isJumping && Input.GetButton("Jump"))
         {
-            if(jumpTimer < jumpTime)
+            if (jumpTimer < jumpTime)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 jumpTimer += Time.deltaTime;
-            } else
+            }
+            else
             {
                 isJumping = false;
             }
@@ -56,46 +78,70 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
 
-        #region CROUCHING
+        #region Sliding
 
-        if(isGrounded && Input.GetButton("Crouch"))
+        if (Input.GetButtonDown("Fire3") && !isSliding)
         {
-            GFX.localScale = new Vector3(GFX.localScale.x, crouchHeight, GFX.localScale.z);
+            StartSlide();
+        }
 
-            if (isJumping)
+        if (isSliding)
+        {
+            slideTimer -= Time.deltaTime;
+            if (slideTimer <= 0f)
             {
-                GFX.localScale = new Vector3(GFX.localScale.x, 1f, GFX.localScale.z);
+                EndSlide();
             }
         }
 
-        if (Input.GetButtonUp("Crouch"))
-        {
-            GFX.localScale = new Vector3(GFX.localScale.x, 1f, GFX.localScale.z);
-        }
+        #endregion
+
+
+        #region CROUCHING
+
+        //if(isGrounded && Input.GetButton("Crouch"))
+        //{
+        //    GFX.localScale = new Vector3(GFX.localScale.x, crouchHeight, GFX.localScale.z);
+
+        //    if (isJumping)
+        //    {
+        //        GFX.localScale = new Vector3(GFX.localScale.x, 1f, GFX.localScale.z);
+        //    }
+        //}
+
+        //if (Input.GetButtonUp("Crouch"))
+        //{
+        //    GFX.localScale = new Vector3(GFX.localScale.x, 1f, GFX.localScale.z);
+        //}
 
         #endregion
 
-        #region Left and Right Turns
-        turnLeft = Input.GetKeyDown(KeyCode.A);
-        turnRight = Input.GetKeyDown(KeyCode.D);
+        #region Left/Right Movement
 
-        if (turnLeft)
-        {
-            GFX.localRotation = Quaternion.Euler(0, 0, 90);
+        float inputX = Input.GetAxisRaw("Horizontal"); //A/D/Arrows
 
-        } else if (turnRight)
-        {
-            GFX.localRotation = Quaternion.Euler(0, 0, -90);
-
-        }
-
-        //rb.linearVelocity = new Vector2(rb.linearVelocity.x, speed);
-
-        //float horizontalInput = Input.GetAxisRaw("Horizontal");
-        //rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y);
+        targetX += inputX * moveSpeed * Time.deltaTime;
+        targetX = Mathf.Clamp(targetX, -horizontalLimit, horizontalLimit);
+       
+        float smoothX = Mathf.Lerp(transform.position.x, targetX, 10f * Time.deltaTime);
+        transform.position = new Vector3(smoothX, transform.position.y, transform.position.z);
 
         #endregion
+    }
 
+    private void StartSlide()
+    {
+        isSliding = true;
+        slideTimer = slideDuration;
+        animator?.SetBool("Sliding", true);
 
     }
+
+    private void EndSlide()
+    {
+        isSliding = false;
+        animator?.SetBool("Sliding", false);
+    }
+
+
 }

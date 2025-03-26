@@ -13,7 +13,7 @@ public class GroundMovement : MonoBehaviour
 
         if(transform.position.y <= -tileHeight)
         {
-            transform.position = new Vector3(transform.position.x, tileHeight, 0);
+            transform.position = new Vector3(transform.position.x, tileHeight, transform.position.z);
         }
     }
 }
