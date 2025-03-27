@@ -31,13 +31,14 @@ public class GameManager : MonoBehaviour
     public UnityEvent onPlay = new UnityEvent();
     public UnityEvent onGameOver = new UnityEvent();
 
-    [SerializeField] private TMP_InputField nameInputField;
-    [SerializeField] private GameObject nameInputPanel;
+    //[SerializeField] private TMP_InputField nameInputField;
+    //[SerializeField] private GameObject nameInputPanel;
 
 
     private void Start()
     {
         string loadedData = SaveSystem.Load("save");
+
         if (loadedData != null)
         {
             data = JsonUtility.FromJson<SaveData>(loadedData);
@@ -45,6 +46,15 @@ public class GameManager : MonoBehaviour
         else
         {
             data = new SaveData();
+        }
+
+        string playerName = PlayerPrefs.GetString("PlayerName", "Player");
+        data.name = playerName;
+
+        if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainGame")
+        {
+            //StartGame();
+            FindFirstObjectByType<UIManager>().StartCountdown();
         }
     }
 
@@ -65,32 +75,37 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        if(currentScore > data.highScore)
-        {
-            nameInputPanel.SetActive(true);
-            data.highScore = currentScore;
-            data.name = "";
-            string saveString = JsonUtility.ToJson(data);
-            SaveSystem.Save("save", saveString);
-        }
-        else
-        {
-            nameInputPanel.SetActive(false);
-        }
         isPlaying = false;
 
+        if(currentScore > data.highScore)
+        {
+            //nameInputPanel.SetActive(true);
+            data.highScore = currentScore;
+           // data.name = "";
+        }
+
+        string saveString = JsonUtility.ToJson(data);
+        SaveSystem.Save("save", saveString);
+
+        PlayerPrefs.SetInt("Score", Mathf.RoundToInt(currentScore));
+        PlayerPrefs.SetInt("HighScore", Mathf.RoundToInt(data.highScore));
+        PlayerPrefs.SetString("PlayerName", data.name);
+        PlayerPrefs.Save();
+
         onGameOver.Invoke();
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("GameOver");
     }
 
-    public void submitName()
-    {
-        string initials = nameInputField.text.ToUpper().Trim();
-        if (initials.Length > 0)
-        {
-            data.name = initials;
-        }
-        nameInputPanel.SetActive(false);
-    }
+    //public void submitName()
+    //{
+    //    string initials = nameInputField.text.ToUpper().Trim();
+    //    if (initials.Length > 0)
+    //    {
+    //        data.name = initials;
+    //    }
+    //    nameInputPanel.SetActive(false);
+    //}
 
     public string PrettyScore(float score)
     {

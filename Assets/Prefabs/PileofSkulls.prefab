@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6746419257426256626}
   - component: {fileID: 2728578812115314488}
   - component: {fileID: 5256696491597273797}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PileofSkulls
   m_TagString: Untagged
   m_Icon: {fileID: 0}

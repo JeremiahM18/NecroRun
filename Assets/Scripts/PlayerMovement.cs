@@ -43,6 +43,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if(!GameManager.Instance.isPlaying) return;
 
+        if (animator != null)
+        {
+            animator.SetBool("isRunning", GameManager.Instance.isPlaying);
+        }
+
         isGrounded = Physics2D.OverlapCircle(feetPos.position, groundDistance, groundLayer) 
             || Mathf.Abs(rb.linearVelocity.y) < 0.01f;
 

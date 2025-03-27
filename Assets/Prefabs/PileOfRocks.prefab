@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6891419692317947447}
   - component: {fileID: 6709664628810111892}
   - component: {fileID: 7153415457246168593}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PileOfRocks
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 301740010370395357}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8637534, y: 7.3458314, z: -1.0678632}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -119,7 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2474454852120637063}
   - component: {fileID: 487892841612332875}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,7 +206,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2647943779030255901}
   - component: {fileID: 3576911176274741777}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Rock2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 1902064977413398695}
   - component: {fileID: 1967631005130269258}
   - component: {fileID: 6084756356090486107}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ground_rocks_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}

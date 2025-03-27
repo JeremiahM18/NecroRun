@@ -5,17 +5,18 @@ TagManager:
   serializedVersion: 3
   tags:
   - Obstacle
+  - FakeGround
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - FakeGround
   - Water
   - UI
   - Ground
   - Player
   - Background
-  - 
+  - Obstacle
   - 
   - 
   - 
