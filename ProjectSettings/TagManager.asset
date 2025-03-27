@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Obstacle
   - FakeGround
+  - TallObstacle
+  - LowObstacle
   layers:
   - Default
   - TransparentFX
@@ -17,8 +19,8 @@ TagManager:
   - Player
   - Background
   - Obstacle
-  - 
-  - 
+  - TallObstacle
+  - LowObstacle
   - 
   - 
   - 

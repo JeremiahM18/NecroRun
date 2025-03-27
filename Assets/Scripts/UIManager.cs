@@ -19,6 +19,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameOverHighScoreUI;
     [SerializeField] private TextMeshProUGUI gameOverPlayerNameUI;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip countDownAudio;
+    private AudioSource  audioSource;
+
     GameManager gameManager;
 
     private void Start()
@@ -29,11 +33,20 @@ public class UIManager : MonoBehaviour
             gameManager.onGameOver.AddListener(ActivateGameOverUI);
         }
 
+        if(SceneManager.GetActiveScene().name == "MainGame")
+        {
+            StartCountdown();
+        }
+
         if(gameOverScoreUI != null)
         {
-            gameOverScoreUI.text = "Score: " + PlayerPrefs.GetInt("Score", 0);
-            gameOverHighScoreUI.text = "High Score: " + PlayerPrefs.GetInt("HighScore", 0);
-            gameOverPlayerNameUI.text = "Player: " + PlayerPrefs.GetString("PlayerName", "Player");
+            int score = Mathf.RoundToInt(PlayerPrefs.GetFloat("Score", 0f));
+            int highScore = Mathf.RoundToInt(PlayerPrefs.GetFloat("HighScore", 0f));
+            string playerName = PlayerPrefs.GetString("PlayerName", "Player");
+            
+            gameOverScoreUI.text = "Score: " + score;
+            gameOverHighScoreUI.text = "High Score: " + highScore;
+            gameOverPlayerNameUI.text = "Player: " + playerName;
         }
     }
 
@@ -45,32 +58,40 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #region Countdown 
     public void StartCountdown()
     {
         StartCoroutine(CountdownRoutine());
     }
 
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     private IEnumerator CountdownRoutine()
     {
         countdownText.gameObject.SetActive(true);
         GameManager.Instance.isPlaying = false;
 
         string[] countdownWords = { "3", "2", "1", "RUN!" };
-        Color[] countdownColors = {Color.red, Color.yellow, Color.green, Color.black};
+        Color[] countdownColors = { Color.red, Color.yellow, Color.green, Color.black };
 
-        for(int i = 0; i < countdownWords.Length; i++)
+        for (int i = 0; i < countdownWords.Length; i++)
         {
+            if (audioSource != null && countDownAudio != null)
+            {
+                audioSource.PlayOneShot(countDownAudio);
+            }
             countdownText.text = countdownWords[i];
             countdownText.color = countdownColors[i];
 
-            
             yield return new WaitForSeconds(1f);
         }
 
-        countdownText.gameObject.SetActive(false);
-        GameManager.Instance.StartGame();
-     }
-
+            countdownText.gameObject.SetActive(false);
+            GameManager.Instance.StartGame();
+    }
+    #endregion
     public void PlayButtonHandler()
     {
         string name = playerNameInput != null ? playerNameInput.text : "Player";
@@ -99,7 +120,7 @@ public class UIManager : MonoBehaviour
 
         // Save score 
         PlayerPrefs.SetFloat("Score", gameManager.currentScore);
-        PlayerPrefs.SetFloat("HighScore", Mathf.Max(gameManager.currentScore, PlayerPrefs.GetFloat("HighScore", 0)));
+        PlayerPrefs.SetFloat("HighScore", Mathf.Max(gameManager.currentScore, PlayerPrefs.GetFloat("HighScore", 0f)));
         PlayerPrefs.Save();
 
         //gameOverScoreUI.text = $"Score:  {gameManager.PrettyScore(gameManager.currentScore)}";

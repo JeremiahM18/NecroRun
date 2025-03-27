@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -87,14 +88,14 @@ public class GameManager : MonoBehaviour
         string saveString = JsonUtility.ToJson(data);
         SaveSystem.Save("save", saveString);
 
-        PlayerPrefs.SetInt("Score", Mathf.RoundToInt(currentScore));
-        PlayerPrefs.SetInt("HighScore", Mathf.RoundToInt(data.highScore));
+        PlayerPrefs.SetFloat("Score", Mathf.RoundToInt(currentScore));
+        PlayerPrefs.SetFloat("HighScore", Mathf.RoundToInt(data.highScore));
         PlayerPrefs.SetString("PlayerName", data.name);
         PlayerPrefs.Save();
 
         onGameOver.Invoke();
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameOver");
+        SceneManager.LoadScene("GameOverMenu");
     }
 
     //public void submitName()

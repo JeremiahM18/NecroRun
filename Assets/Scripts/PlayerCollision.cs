@@ -23,25 +23,27 @@ public class PlayerCollision : MonoBehaviour
 
         if (collision.gameObject.CompareTag("TallObstacle"))
         {
-            if (player.IsJumping)
+            if (!player.IsJumping)
             {
-                return;
+                GameManager.Instance.GameOver();
+                gameObject.SetActive(false);
             }
         }
 
         else if (collision.gameObject.CompareTag("LowObstacle"))
         {
-            if (player.IsSliding)
+            if (!player.IsSliding)
             {
-                return;
+                GameManager.Instance.GameOver();
+                gameObject.SetActive(false);
             }
         }
 
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
             Debug.Log("Player triggered an obstacle!");
+            GameManager.Instance.GameOver();
+            gameObject.SetActive(false);
         }
-        GameManager.Instance.GameOver();
-        gameObject.SetActive(false);
     }
 }
