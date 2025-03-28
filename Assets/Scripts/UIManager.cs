@@ -18,16 +18,25 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameOverScoreUI;
     [SerializeField] private TextMeshProUGUI gameOverHighScoreUI;
     [SerializeField] private TextMeshProUGUI gameOverPlayerNameUI;
-
+    
     [Header("Audio")]
+    //[SerializeField] private AudioClip mainGameAudio;
     [SerializeField] private AudioClip countDownAudio;
-    private AudioSource  audioSource;
+    [SerializeField] private AudioSource audioSource; 
+    private bool hasStartedCountdown = false;
 
     GameManager gameManager;
 
+    #region Singleton
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+    #endregion
     private void Start()
     {
         gameManager = GameManager.Instance;
+
         if (gameManager != null)
         {
             gameManager.onGameOver.AddListener(ActivateGameOverUI);
@@ -58,15 +67,15 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    #region Countdown 
+    #region Countdown Audio 
     public void StartCountdown()
     {
+        if (hasStartedCountdown)
+        {
+            return;
+        }
+        hasStartedCountdown = true;
         StartCoroutine(CountdownRoutine());
-    }
-
-    private void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
     }
     private IEnumerator CountdownRoutine()
     {
@@ -82,14 +91,21 @@ public class UIManager : MonoBehaviour
             {
                 audioSource.PlayOneShot(countDownAudio);
             }
+
             countdownText.text = countdownWords[i];
             countdownText.color = countdownColors[i];
 
             yield return new WaitForSeconds(1f);
         }
+        countdownText.gameObject.SetActive(false);
+        GameManager.Instance.StartGame();
 
-            countdownText.gameObject.SetActive(false);
-            GameManager.Instance.StartGame();
+        //if (audioSource != null && mainGameAudio != null)
+        //{
+        //    audioSource.clip = mainGameAudio;
+        //    audioSource.loop = true;
+        //    audioSource.Play();
+        //}
     }
     #endregion
     public void PlayButtonHandler()
@@ -103,6 +119,7 @@ public class UIManager : MonoBehaviour
 
     public void RetryButtonHandler()
     {
+        hasStartedCountdown = false;
         SceneManager.LoadScene("MainGame");
     }
 
@@ -126,5 +143,11 @@ public class UIManager : MonoBehaviour
         //gameOverScoreUI.text = $"Score:  {gameManager.PrettyScore(gameManager.currentScore)}";
         //gameOverHighScoreUI.text = $"High Score: {gameManager.PrettyScore(gameManager.data.highScore)}";
         //gameOverPlayerNameUI.text = "Player: " + gameManager.data.name;
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quit game");
+        Application.Quit();
     }
 }

@@ -52,11 +52,12 @@ public class GameManager : MonoBehaviour
         string playerName = PlayerPrefs.GetString("PlayerName", "Player");
         data.name = playerName;
 
-        if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainGame")
-        {
-            //StartGame();
-            FindFirstObjectByType<UIManager>().StartCountdown();
-        }
+        
+        //if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainGame")
+        //{
+        //    //StartGame();
+        //    FindFirstObjectByType<UIManager>().StartCountdown();
+        //}
     }
 
     private void Update()
